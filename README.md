@@ -32,6 +32,7 @@ npm start
 | `WEBHOOK_SECRET` | 웹훅 시크릿 키 | `a1b2c3d4e5...` |
 | `WELCOME_MESSAGE` | 환영 메시지 템플릿 | `안녕하세요 {{display_name}}님!` |
 | `PORT` | 서버 포트 (기본: 3000) | `3000` |
+| `TRUSTED_PROXY` | Trust Proxy 설정 (리버스 프록시 사용 시) | `loopback` |
 
 ### 메시지 템플릿 변수
 
@@ -46,6 +47,7 @@ npm start
 
 - [PM2 설정 및 관리 가이드](docs/pm2-setup.md)
 - [마스토돈 웹훅 설정 가이드](docs/webhook-setup.md)
+- [Nginx 리버스 프록시 설정 가이드](docs/nginx-proxy-setup.md)
 
 ## 라이선스
 

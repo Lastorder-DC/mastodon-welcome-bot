@@ -23,25 +23,9 @@
 - 예: `https://webhook.example.com/webhook`
 - HTTPS를 사용하는 것을 권장합니다 (리버스 프록시 사용).
 
-#### Nginx 리버스 프록시 설정 예시
+#### Nginx 리버스 프록시 설정
 
-```nginx
-server {
-    listen 443 ssl;
-    server_name webhook.example.com;
-
-    ssl_certificate /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-```
+Nginx를 리버스 프록시로 사용하는 상세한 설정 방법은 [Nginx 리버스 프록시 설정 가이드](nginx-proxy-setup.md)를 참고하세요.
 
 ## 웹훅 등록
 

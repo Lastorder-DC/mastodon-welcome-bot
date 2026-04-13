@@ -11,6 +11,7 @@ const {
   WEBHOOK_SECRET,
   WELCOME_MESSAGE,
   PORT = '3000',
+  TRUSTED_PROXY,
 } = process.env;
 
 // 필수 환경변수 검증
@@ -91,6 +92,22 @@ async function sendDirectMessage(acct, message) {
   }
 
   return response.json();
+}
+
+// trust proxy 설정 (리버스 프록시 사용 시)
+if (TRUSTED_PROXY) {
+  // 쉼표로 구분된 값, 숫자(홉 수), 또는 단일 값을 지원
+  const value = TRUSTED_PROXY.trim();
+  if (/^\d+$/.test(value)) {
+    app.set('trust proxy', parseInt(value, 10));
+  } else if (value === 'true') {
+    app.set('trust proxy', true);
+  } else {
+    // 쉼표로 구분된 IP/서브넷 또는 'loopback', 'linklocal', 'uniquelocal'
+    const proxies = value.split(',').map((s) => s.trim());
+    app.set('trust proxy', proxies.length === 1 ? proxies[0] : proxies);
+  }
+  console.log(`trust proxy 설정: ${value}`);
 }
 
 // raw body를 버퍼로 보존하면서 JSON 파싱
