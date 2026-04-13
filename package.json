@@ -1,0 +1,21 @@
+{
+  "name": "mastodon-welcome-bot",
+  "version": "1.0.0",
+  "description": "Mastodon Welcome Bot - account.approved 웹훅을 이용한 환영 DM 발송 서버",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "keywords": [
+    "mastodon",
+    "webhook",
+    "welcome",
+    "bot"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}
