@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const crypto = require('crypto');
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 
@@ -52,15 +53,21 @@ function renderTemplate(template, variables) {
 function verifySignature(payload, signature) {
   if (!signature) return false;
 
-  const expected = `sha256=${crypto
-    .createHmac('sha256', WEBHOOK_SECRET)
-    .update(payload)
-    .digest('hex')}`;
+  try {
+    const expected = `sha256=${crypto
+      .createHmac('sha256', WEBHOOK_SECRET)
+      .update(payload)
+      .digest('hex')}`;
 
-  return crypto.timingSafeEqual(
-    Buffer.from(expected),
-    Buffer.from(signature)
-  );
+    const expectedBuf = Buffer.from(expected);
+    const signatureBuf = Buffer.from(signature);
+
+    if (expectedBuf.length !== signatureBuf.length) return false;
+
+    return crypto.timingSafeEqual(expectedBuf, signatureBuf);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -107,7 +114,7 @@ if (TRUSTED_PROXY) {
     const proxies = value.split(',').map((s) => s.trim());
     app.set('trust proxy', proxies.length === 1 ? proxies[0] : proxies);
   }
-  console.log(`trust proxy 설정: ${value}`);
+  console.log('trust proxy 설정이 활성화되었습니다.');
 }
 
 // raw body를 버퍼로 보존하면서 JSON 파싱
@@ -119,13 +126,22 @@ app.use(
   })
 );
 
+// 레이트 리밋 설정 (1분에 최대 30회)
+const webhookLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests' },
+});
+
 // 헬스체크 엔드포인트
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
 // 웹훅 수신 엔드포인트
-app.post('/webhook', async (req, res) => {
+app.post('/webhook', webhookLimiter, async (req, res) => {
   // 서명 검증
   const signature = req.headers['x-hub-signature'];
   if (!verifySignature(req.rawBody, signature)) {
@@ -137,7 +153,7 @@ app.post('/webhook', async (req, res) => {
 
   // account.approved 이벤트만 처리
   if (event !== 'account.approved') {
-    console.log(`이벤트 무시: ${event}`);
+    console.log('이벤트 무시: %s', event);
     return res.status(200).json({ status: 'ignored' });
   }
 
@@ -166,10 +182,10 @@ app.post('/webhook', async (req, res) => {
 
   try {
     const result = await sendDirectMessage(acct, formattedMessage);
-    console.log(`환영 DM 전송 완료: @${acct} (status id: ${result.id})`);
+    console.log('환영 DM 전송 완료: @%s (status id: %s)', acct, result.id);
     return res.status(200).json({ status: 'ok', statusId: result.id });
   } catch (error) {
-    console.error(`환영 DM 전송 실패 (@${acct}):`, error.message);
+    console.error('환영 DM 전송 실패 (@%s):', acct, error.message);
     return res.status(500).json({ error: 'Failed to send DM' });
   }
 });
