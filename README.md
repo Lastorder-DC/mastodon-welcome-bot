@@ -1,5 +1,7 @@
 # mastodon-welcome-bot
 
+**[English version available → README.en.md](README.en.md)**
+
 마스토돈 `account.approved` 웹훅을 이용하여 새로 승인된 사용자에게 환영 DM을 자동으로 발송하는 Node.js 서버입니다.
 
 ## 주요 기능
@@ -45,9 +47,9 @@ npm start
 
 ## 문서
 
-- [PM2 설정 및 관리 가이드](docs/pm2-setup.md)
-- [마스토돈 웹훅 설정 가이드](docs/webhook-setup.md)
-- [Nginx 리버스 프록시 설정 가이드](docs/nginx-proxy-setup.md)
+- [PM2 설정 및 관리 가이드](docs/pm2-setup.md) · [English](docs/pm2-setup.en.md)
+- [마스토돈 웹훅 설정 가이드](docs/webhook-setup.md) · [English](docs/webhook-setup.en.md)
+- [Nginx 리버스 프록시 설정 가이드](docs/nginx-proxy-setup.md) · [English](docs/nginx-proxy-setup.en.md)
 
 ## 라이선스
 
